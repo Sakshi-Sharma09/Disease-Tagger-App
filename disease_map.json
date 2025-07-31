@@ -1,0 +1,55 @@
+{
+    "diabetes": "Endocrinology",
+    "hypothyroidism": "Endocrinology",
+    "cushing's syndrome": "Endocrinology",
+    "acromegaly": "Endocrinology",
+  
+    "breast cancer": "Oncology",
+    "lung cancer": "Oncology",
+    "prostate cancer": "Oncology",
+    "leukemia": "Oncology",
+    "lymphoma": "Oncology",
+    "glioblastoma": "Oncology",
+  
+    "asthma": "Pulmonology",
+    "chronic obstructive pulmonary disease": "Pulmonology",
+    "tuberculosis": "Pulmonology",
+    "pulmonary fibrosis": "Pulmonology",
+  
+    "epilepsy": "Neurology",
+    "alzheimer's disease": "Neurology",
+    "parkinson's disease": "Neurology",
+    "multiple sclerosis": "Neurology",
+    "migraine": "Neurology",
+  
+    "hypertension": "Cardiology",
+    "myocardial infarction": "Cardiology",
+    "arrhythmia": "Cardiology",
+    "congestive heart failure": "Cardiology",
+    "stroke": "Cardiology",
+  
+    "crohn's disease": "Gastroenterology",
+    "ulcerative colitis": "Gastroenterology",
+    "hepatitis b": "Gastroenterology",
+    "irritable bowel syndrome": "Gastroenterology",
+  
+    "covid-19": "Infectious Disease",
+    "malaria": "Infectious Disease",
+    "dengue": "Infectious Disease",
+    "hiv": "Infectious Disease",
+  
+    "psoriasis": "Dermatology",
+    "eczema": "Dermatology",
+    "acne": "Dermatology",
+  
+    "chronic kidney disease": "Nephrology",
+    "glomerulonephritis": "Nephrology",
+  
+    "rheumatoid arthritis": "Rheumatology",
+    "lupus": "Rheumatology",
+  
+    "depression": "Psychiatry",
+    "schizophrenia": "Psychiatry",
+    "anxiety": "Psychiatry",
+    "bipolar disorder": "Psychiatry"
+  }  
