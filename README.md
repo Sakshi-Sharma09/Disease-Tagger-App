@@ -33,6 +33,14 @@
 - **JSON** for disease mapping
 - **Basic NLP** (tokenization, lowercasing)
 
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).  
+You are free to use, modify, and distribute this code for any purpose, as long as proper credit is given to the original author.
+
+© 2025 Sakshi Sharma
+
+
 ---
 
 ## 📁 Project Structure
