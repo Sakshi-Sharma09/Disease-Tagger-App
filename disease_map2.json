@@ -1,0 +1,45 @@
+{
+  "diabetes": { "therapeutic_area": "Endocrinology", "icd11_code": "5A11" },
+  "hypothyroidism": { "therapeutic_area": "Endocrinology", "icd11_code": "5A00.Z" },
+  "cushing's syndrome": { "therapeutic_area": "Endocrinology", "icd11_code": "5A70.Z" },
+  "acromegaly": { "therapeutic_area": "Endocrinology", "icd11_code": "5A60.0" },
+  "breast cancer": { "therapeutic_area": "Oncology", "icd11_code": "2C60" },
+  "lung cancer": { "therapeutic_area": "Oncology", "icd11_code": "2C25" },
+  "prostate cancer": { "therapeutic_area": "Oncology", "icd11_code": "2C82" },
+  "leukemia": { "therapeutic_area": "Oncology", "icd11_code": "2B33.4" },
+  "lymphoma": { "therapeutic_area": "Oncology", "icd11_code": "2B30" },  // Hodgkin lymphoma :contentReference[oaicite:0]{index=0}
+  "glioblastoma": { "therapeutic_area": "Oncology", "icd11_code": "2A00.00" },  // Glioblastoma of brain :contentReference[oaicite:1]{index=1}
+  "asthma": { "therapeutic_area": "Pulmonology", "icd11_code": "CA23" },
+  "chronic obstructive pulmonary disease": { "therapeutic_area": "Pulmonology", "icd11_code": "CA22" },  // COPD general code :contentReference[oaicite:2]{index=2}
+  "tuberculosis": { "therapeutic_area": "Pulmonology", "icd11_code": "1B10.0" },
+  "pulmonary fibrosis": { "therapeutic_area": "Pulmonology", "icd11_code": "CB03.4" },  // Idiopathic pulmonary fibrosis :contentReference[oaicite:3]{index=3}
+  "epilepsy": { "therapeutic_area": "Neurology", "icd11_code": "8A68" },  // Epilepsy or seizures general section :contentReference[oaicite:4]{index=4}
+  "alzheimer's disease": { "therapeutic_area": "Neurology", "icd11_code": "6D80" },  // Dementia due to Alzheimer disease :contentReference[oaicite:5]{index=5}
+  "parkinson's disease": { "therapeutic_area": "Neurology", "icd11_code": "PLACEHOLDER" },
+  "multiple sclerosis": { "therapeutic_area": "Neurology", "icd11_code": "PLACEHOLDER" },
+  "migraine": { "therapeutic_area": "Neurology", "icd11_code": "PLACEHOLDER" },
+  "hypertension": { "therapeutic_area": "Cardiology", "icd11_code": "BA00" },
+  "myocardial infarction": { "therapeutic_area": "Cardiology", "icd11_code": "BA41" },
+  "arrhythmia": { "therapeutic_area": "Cardiology", "icd11_code": "PLACEHOLDER" },
+  "congestive heart failure": { "therapeutic_area": "Cardiology", "icd11_code": "BA01" },
+  "stroke": { "therapeutic_area": "Cardiology", "icd11_code": "PLACEHOLDER" },
+  "crohn's disease": { "therapeutic_area": "Gastroenterology", "icd11_code": "PLACEHOLDER" },
+  "ulcerative colitis": { "therapeutic_area": "Gastroenterology", "icd11_code": "PLACEHOLDER" },
+  "hepatitis b": { "therapeutic_area": "Gastroenterology", "icd11_code": "PLACEHOLDER" },
+  "irritable bowel syndrome": { "therapeutic_area": "Gastroenterology", "icd11_code": "PLACEHOLDER" },
+  "covid-19": { "therapeutic_area": "Infectious Disease", "icd11_code": "1A00" },
+  "malaria": { "therapeutic_area": "Infectious Disease", "icd11_code": "PLACEHOLDER" },
+  "dengue": { "therapeutic_area": "Infectious Disease", "icd11_code": "PLACEHOLDER" },
+  "hiv": { "therapeutic_area": "Infectious Disease", "icd11_code": "PLACEHOLDER" },
+  "psoriasis": { "therapeutic_area": "Dermatology", "icd11_code": "PLACEHOLDER" },
+  "eczema": { "therapeutic_area": "Dermatology", "icd11_code": "PLACEHOLDER" },
+  "acne": { "therapeutic_area": "Dermatology", "icd11_code": "PLACEHOLDER" },
+  "chronic kidney disease": { "therapeutic_area": "Nephrology", "icd11_code": "PLACEHOLDER" },
+  "glomerulonephritis": { "therapeutic_area": "Nephrology", "icd11_code": "PLACEHOLDER" },
+  "rheumatoid arthritis": { "therapeutic_area": "Rheumatology", "icd11_code": "PLACEHOLDER" },
+  "lupus": { "therapeutic_area": "Rheumatology", "icd11_code": "PLACEHOLDER" },
+  "depression": { "therapeutic_area": "Psychiatry", "icd11_code": "6A71" },
+  "schizophrenia": { "therapeutic_area": "Psychiatry", "icd11_code": "6A20" },
+  "anxiety": { "therapeutic_area": "Psychiatry", "icd11_code": "6B00" },
+  "bipolar disorder": { "therapeutic_area": "Psychiatry", "icd11_code": "6A60" }
+}
