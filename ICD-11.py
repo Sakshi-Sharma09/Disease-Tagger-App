@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Biomedical Disease Tagger and Insight Tool (fixed)
+Biomedical Disease Tagger and Insight Tool
 - Tries disease_map.json and disease_map2.json
 - Validates JSON structure
-- Defensive coding so Streamlit won't crash on malformed entries
 - Caches WHO ICD-11 lookups per disease name
 Requirements:
-pip install streamlit pandas requests
+    pip install streamlit pandas requests
 """
 import streamlit as st
 import pandas as pd
@@ -33,7 +32,6 @@ def load_disease_map() -> Dict[str, Dict[str, Any]]:
                 with open(p, "r", encoding="utf-8") as f:
                     raw = json.load(f)
                 if isinstance(raw, dict):
-                    # Normalize keys to lowercase and ensure values are dicts
                     clean: Dict[str, Dict[str, Any]] = {}
                     for k, v in raw.items():
                         if not isinstance(v, dict):
@@ -52,10 +50,8 @@ def load_disease_map() -> Dict[str, Dict[str, Any]]:
 @st.cache_data
 def fetch_icd11_code_from_who(disease_name: str) -> str:
     """Fetch ICD-11 code from WHO API. Cached per disease_name to avoid repeated calls."""
-    # Prefer st.secrets, fall back to environment variable if user has set it
     api_key = st.secrets.get("WHO_API_KEY") if hasattr(st, "secrets") else None
     if not api_key:
-        # Inform the user via logs and return a sentinel
         logger.warning("WHO_API_KEY not set in streamlit secrets. Skipping WHO lookup.")
         return "API key missing"
 
@@ -65,10 +61,8 @@ def fetch_icd11_code_from_who(disease_name: str) -> str:
         r = requests.get(WHO_API_BASE, headers=headers, params=params, timeout=10)
         r.raise_for_status()
         data = r.json()
-        # The WHO API returns a list of destinationEntities — choose first match
         if isinstance(data, dict) and "destinationEntities" in data and data["destinationEntities"]:
             first = data["destinationEntities"][0]
-            # The WHO id often ends with the code
             entity_id = first.get("id", "")
             code = entity_id.split("/")[-1] if entity_id else "Not found"
             logger.info("WHO lookup %s -> %s", disease_name, code)
@@ -86,10 +80,8 @@ class DiseaseTagger:
         text_lower = text.lower()
         matches: List[Tuple[str, str, str]] = []
         for disease, info in self.disease_map.items():
-            # ensure types are correct
             if not isinstance(info, dict):
                 continue
-            # simple substring match; you can replace with spaCy / token match if desired
             if disease in text_lower:
                 icd_code = info.get("icd11_code")
                 if not icd_code or icd_code == "PLACEHOLDER":
@@ -98,140 +90,69 @@ class DiseaseTagger:
         return matches
 
 def create_streamlit_app():
-    st.set_page_config(page_title="Disease Tagger + ICD-11 Auto", layout="wide")
-    st.title("🧠 Disease Tagger & ICD-11 Auto-Updater")
-    st.markdown("Analyze biomedical text and view standardized ICD-11 codes (auto-updated via WHO API).")
-
-    # Load disease map
-    disease_map = load_disease_map()
-    if not disease_map:
-        st.warning(
-            "No valid disease_map found. Place a JSON file named `disease_map.json` (or `disease_map2.json`) "
-            "in the app folder. See the app README for expected structure."
-        )
-
-    tagger = DiseaseTagger(disease_map)
-
-    # Option to refresh cached WHO lookups (useful during development)
-    st.sidebar.header("Developer")
-    refresh_icd = st.sidebar.button("Refresh WHO ICD cache")  # clearing cached data is handled by streamlit in dev
-
-    # Display full disease table
-    st.subheader("Available Diseases")
-    rows = []
-    for disease, info in disease_map.items():
-        if not isinstance(info, dict):
-            # Skip malformed entries but show a placeholder row
-            rows.append({"Disease": disease.title(), "Therapeutic Area": "Invalid entry", "ICD-11 Code": "Invalid"})
-            continue
-        icd_code = info.get("icd11_code")
-        if not icd_code or icd_code == "PLACEHOLDER":
-            # Only attempt WHO lookup if API key exists; otherwise show informative text
-            icd_code = fetch_icd11_code_from_who(disease)
-        rows.append({
-            "Disease": disease.title(),
-            "Therapeutic Area": info.get("therapeutic_area", "Not available"),
-            "ICD-11 Code": icd_code
-        })
-
-    if rows:
-        df = pd.DataFrame(rows)
-        st.dataframe(df, use_container_width=True)
-    else:
-        st.info("No diseases to display yet.")
-
-    # Input and tagging
-    st.subheader("Tag Your Text")
-    user_text = st.text_area("Paste biomedical text here:", height=150)
-    if user_text:
-        matches = tagger.tag_in_text(user_text)
-        if matches:
-            st.success(f"Detected {len(matches)} disease(s):")
-            for disease, area, icd in matches:
-                st.write(f"**{disease.title()}** — {area} (ICD-11: {icd})")
-        else:
-            st.warning("No known diseases detected.")
-def create_streamlit_app():
     st.set_page_config(page_title="🧠 Disease Tagger with ICD-11", page_icon="🧠", layout="wide")
 
-    # Custom CSS for styling
+    # Custom CSS
     st.markdown("""
     <style>
-        .main {
-            background-color: #f7f9fc;
-        }
+        .main { background-color: #f7f9fc; }
         .stButton>button {
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 8px;
-            padding: 0.5em 1em;
-            font-weight: bold;
+            background-color: #4CAF50; color: white; border-radius: 8px;
+            padding: 0.5em 1em; font-weight: bold;
         }
-        .stButton>button:hover {
-            background-color: #45a049;
-        }
+        .stButton>button:hover { background-color: #45a049; }
         .section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            background-color: white; padding: 20px; border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 20px;
         }
-        h1 {
-            text-align: center;
-            color: #2C3E50;
-        }
+        h1 { text-align: center; color: #2C3E50; }
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown("<h1>🧠 Disease Tagger with ICD-11</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center;color:gray;'>Analyze biomedical text and view standardized ICD-11 codes (auto-updated via WHO API)</p>", unsafe_allow_html=True)
 
-    # Load disease map
+    # Load data
     disease_map = load_disease_map()
     tagger = DiseaseTagger(disease_map)
 
-    # Sidebar developer tools
+    # Sidebar
     with st.sidebar:
         st.header("Developer Tools")
         st.button("🔄 Refresh WHO ICD Cache")
 
-    # Disease Table Section
-    with st.container():
-        st.markdown("<div class='section'>", unsafe_allow_html=True)
-        st.subheader("📋 Available Diseases")
-        if not disease_map:
-            st.warning("⚠ No valid disease_map found. Place `disease_map.json` or `disease_map2.json` in the app folder.")
+    # Disease table
+    st.markdown("<div class='section'>", unsafe_allow_html=True)
+    st.subheader("📋 Available Diseases")
+    if not disease_map:
+        st.warning("⚠ No valid disease_map found. Place `disease_map.json` or `disease_map2.json` in the app folder.")
+    else:
+        rows = []
+        for disease, info in disease_map.items():
+            icd_code = info.get("icd11_code")
+            if not icd_code or icd_code == "PLACEHOLDER":
+                icd_code = fetch_icd11_code_from_who(disease)
+            rows.append({
+                "Disease": disease.title(),
+                "Therapeutic Area": info.get("therapeutic_area", "Not available"),
+                "ICD-11 Code": icd_code
+            })
+        st.dataframe(pd.DataFrame(rows), use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Text tagging
+    st.markdown("<div class='section'>", unsafe_allow_html=True)
+    st.subheader("📝 Tag Your Text")
+    user_text = st.text_area("Paste biomedical text here:", height=150, placeholder="e.g., Patient diagnosed with diabetes and hypertension.")
+    if user_text:
+        matches = tagger.tag_in_text(user_text)
+        if matches:
+            st.success(f"✅ Detected {len(matches)} disease(s):")
+            for disease, area, icd in matches:
+                st.write(f"**{disease.title()}** — {area} (ICD-11: `{icd}`)")
         else:
-            rows = []
-            for disease, info in disease_map.items():
-                icd_code = info.get("icd11_code")
-                if not icd_code or icd_code == "PLACEHOLDER":
-                    icd_code = fetch_icd11_code_from_who(disease)
-                rows.append({
-                    "Disease": disease.title(),
-                    "Therapeutic Area": info.get("therapeutic_area", "Not available"),
-                    "ICD-11 Code": icd_code
-                })
-            st.dataframe(pd.DataFrame(rows), use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # Text Tagging Section
-    with st.container():
-        st.markdown("<div class='section'>", unsafe_allow_html=True)
-        st.subheader("📝 Tag Your Text")
-        user_text = st.text_area("Paste biomedical text here:", height=150, placeholder="e.g., Patient diagnosed with diabetes and hypertension.")
-        if user_text:
-            matches = tagger.tag_in_text(user_text)
-            if matches:
-                st.success(f"✅ Detected {len(matches)} disease(s):")
-                for disease, area, icd in matches:
-                    st.write(f"**{disease.title()}** — {area} (ICD-11: `{icd}`)")
-            else:
-                st.warning("No known diseases detected.")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-do i change my ICD-11.py code to this?
+            st.warning("No known diseases detected.")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 def main():
     create_streamlit_app()
