@@ -1,0 +1,15 @@
+streamlit==1.47.0
+pandas==2.3.1
+scikit-learn==1.5.1
+spacy==3.7.5
+nltk==3.9.1
+biopython==1.85
+aiohttp==3.9.5
+requests==2.32.3
+altair==5.5.0
+attrs==25.1.0
+beautifulsoup4==4.13.3
+blinker==1.9.0
+cachetools==5.5.0
+certifi==2025.7.14
+charset-normalizer==3.4.0
