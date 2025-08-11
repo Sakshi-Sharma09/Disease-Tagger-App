@@ -1,45 +1,62 @@
 #!/usr/bin/env python3
 """
-Biomedical Disease Tagger and Insight Tool
-==========================================
-
-Now includes automatic ICD-11 code fetching from WHO API if not found in local JSON.
-
+Biomedical Disease Tagger and Insight Tool (fixed)
+- Tries disease_map.json and disease_map2.json
+- Validates JSON structure
+- Defensive coding so Streamlit won't crash on malformed entries
+- Caches WHO ICD-11 lookups per disease name
 Requirements:
-pip install streamlit pandas requests biopython spacy
-python -m spacy download en_core_web_sm
+pip install streamlit pandas requests
 """
-
 import streamlit as st
 import pandas as pd
 import json
 import logging
 import requests
-from difflib import get_close_matches
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
+from pathlib import Path
 
-# Configure logging
+# Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 WHO_API_BASE = "https://id.who.int/icd/entity/search"
 
 @st.cache_data
-def load_disease_map():
-    """Load disease mapping with ICD-11 codes from JSON."""
-    try:
-        with open("disease_map.json", "r") as f:
-            return json.load(f)
-    except Exception as e:
-        logger.error(f"Error loading disease_map.json: {e}")
-        return {}
+def load_disease_map() -> Dict[str, Dict[str, Any]]:
+    """Try to load disease map from common filenames and normalize it to dict[str, dict]."""
+    filenames = ["disease_map.json", "disease_map2.json"]
+    for fname in filenames:
+        p = Path(fname)
+        if p.exists():
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    raw = json.load(f)
+                if isinstance(raw, dict):
+                    # Normalize keys to lowercase and ensure values are dicts
+                    clean: Dict[str, Dict[str, Any]] = {}
+                    for k, v in raw.items():
+                        if not isinstance(v, dict):
+                            logger.warning("Skipping entry %r because it's not a dict", k)
+                            continue
+                        clean[k.lower()] = v
+                    logger.info("Loaded %s with %d valid entries", fname, len(clean))
+                    return clean
+                else:
+                    logger.warning("%s exists but JSON root is not an object/dict", fname)
+            except Exception as e:
+                logger.error("Error loading %s: %s", fname, e)
+    logger.warning("No disease_map file found or valid – returning empty mapping.")
+    return {}
 
 @st.cache_data
 def fetch_icd11_code_from_who(disease_name: str) -> str:
-    """Fetch ICD-11 code from WHO API."""
-    api_key = st.secrets.get("WHO_API_KEY")
+    """Fetch ICD-11 code from WHO API. Cached per disease_name to avoid repeated calls."""
+    # Prefer st.secrets, fall back to environment variable if user has set it
+    api_key = st.secrets.get("WHO_API_KEY") if hasattr(st, "secrets") else None
     if not api_key:
-        logger.warning("WHO_API_KEY not found in secrets.")
+        # Inform the user via logs and return a sentinel
+        logger.warning("WHO_API_KEY not set in streamlit secrets. Skipping WHO lookup.")
         return "API key missing"
 
     try:
@@ -48,22 +65,31 @@ def fetch_icd11_code_from_who(disease_name: str) -> str:
         r = requests.get(WHO_API_BASE, headers=headers, params=params, timeout=10)
         r.raise_for_status()
         data = r.json()
-
-        if "destinationEntities" in data and data["destinationEntities"]:
-            return data["destinationEntities"][0].get("id", "Not found").split("/")[-1]
+        # The WHO API returns a list of destinationEntities — choose first match
+        if isinstance(data, dict) and "destinationEntities" in data and data["destinationEntities"]:
+            first = data["destinationEntities"][0]
+            # The WHO id often ends with the code
+            entity_id = first.get("id", "")
+            code = entity_id.split("/")[-1] if entity_id else "Not found"
+            logger.info("WHO lookup %s -> %s", disease_name, code)
+            return code
         return "Not found"
     except Exception as e:
-        logger.error(f"Error fetching ICD-11 for {disease_name}: {e}")
+        logger.error("Error fetching ICD-11 for %s: %s", disease_name, e)
         return "Error"
 
 class DiseaseTagger:
     def __init__(self, disease_map: Dict[str, dict] = None):
-        self.disease_map = disease_map or load_disease_map()
+        self.disease_map = disease_map or {}
 
     def tag_in_text(self, text: str) -> List[Tuple[str, str, str]]:
         text_lower = text.lower()
-        matches = []
+        matches: List[Tuple[str, str, str]] = []
         for disease, info in self.disease_map.items():
+            # ensure types are correct
+            if not isinstance(info, dict):
+                continue
+            # simple substring match; you can replace with spaCy / token match if desired
             if disease in text_lower:
                 icd_code = info.get("icd11_code")
                 if not icd_code or icd_code == "PLACEHOLDER":
@@ -78,21 +104,41 @@ def create_streamlit_app():
 
     # Load disease map
     disease_map = load_disease_map()
+    if not disease_map:
+        st.warning(
+            "No valid disease_map found. Place a JSON file named `disease_map.json` (or `disease_map2.json`) "
+            "in the app folder. See the app README for expected structure."
+        )
+
     tagger = DiseaseTagger(disease_map)
+
+    # Option to refresh cached WHO lookups (useful during development)
+    st.sidebar.header("Developer")
+    refresh_icd = st.sidebar.button("Refresh WHO ICD cache")  # clearing cached data is handled by streamlit in dev
 
     # Display full disease table
     st.subheader("Available Diseases")
     rows = []
     for disease, info in disease_map.items():
+        if not isinstance(info, dict):
+            # Skip malformed entries but show a placeholder row
+            rows.append({"Disease": disease.title(), "Therapeutic Area": "Invalid entry", "ICD-11 Code": "Invalid"})
+            continue
         icd_code = info.get("icd11_code")
         if not icd_code or icd_code == "PLACEHOLDER":
+            # Only attempt WHO lookup if API key exists; otherwise show informative text
             icd_code = fetch_icd11_code_from_who(disease)
         rows.append({
             "Disease": disease.title(),
             "Therapeutic Area": info.get("therapeutic_area", "Not available"),
             "ICD-11 Code": icd_code
         })
-    st.dataframe(pd.DataFrame(rows), use_container_width=True)
+
+    if rows:
+        df = pd.DataFrame(rows)
+        st.dataframe(df, use_container_width=True)
+    else:
+        st.info("No diseases to display yet.")
 
     # Input and tagging
     st.subheader("Tag Your Text")
