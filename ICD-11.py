@@ -151,6 +151,87 @@ def create_streamlit_app():
                 st.write(f"**{disease.title()}** — {area} (ICD-11: {icd})")
         else:
             st.warning("No known diseases detected.")
+def create_streamlit_app():
+    st.set_page_config(page_title="🧠 Disease Tagger with ICD-11", page_icon="🧠", layout="wide")
+
+    # Custom CSS for styling
+    st.markdown("""
+    <style>
+        .main {
+            background-color: #f7f9fc;
+        }
+        .stButton>button {
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            padding: 0.5em 1em;
+            font-weight: bold;
+        }
+        .stButton>button:hover {
+            background-color: #45a049;
+        }
+        .section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2C3E50;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<h1>🧠 Disease Tagger with ICD-11</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center;color:gray;'>Analyze biomedical text and view standardized ICD-11 codes (auto-updated via WHO API)</p>", unsafe_allow_html=True)
+
+    # Load disease map
+    disease_map = load_disease_map()
+    tagger = DiseaseTagger(disease_map)
+
+    # Sidebar developer tools
+    with st.sidebar:
+        st.header("Developer Tools")
+        st.button("🔄 Refresh WHO ICD Cache")
+
+    # Disease Table Section
+    with st.container():
+        st.markdown("<div class='section'>", unsafe_allow_html=True)
+        st.subheader("📋 Available Diseases")
+        if not disease_map:
+            st.warning("⚠ No valid disease_map found. Place `disease_map.json` or `disease_map2.json` in the app folder.")
+        else:
+            rows = []
+            for disease, info in disease_map.items():
+                icd_code = info.get("icd11_code")
+                if not icd_code or icd_code == "PLACEHOLDER":
+                    icd_code = fetch_icd11_code_from_who(disease)
+                rows.append({
+                    "Disease": disease.title(),
+                    "Therapeutic Area": info.get("therapeutic_area", "Not available"),
+                    "ICD-11 Code": icd_code
+                })
+            st.dataframe(pd.DataFrame(rows), use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # Text Tagging Section
+    with st.container():
+        st.markdown("<div class='section'>", unsafe_allow_html=True)
+        st.subheader("📝 Tag Your Text")
+        user_text = st.text_area("Paste biomedical text here:", height=150, placeholder="e.g., Patient diagnosed with diabetes and hypertension.")
+        if user_text:
+            matches = tagger.tag_in_text(user_text)
+            if matches:
+                st.success(f"✅ Detected {len(matches)} disease(s):")
+                for disease, area, icd in matches:
+                    st.write(f"**{disease.title()}** — {area} (ICD-11: `{icd}`)")
+            else:
+                st.warning("No known diseases detected.")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+do i change my ICD-11.py code to this?
 
 def main():
     create_streamlit_app()
