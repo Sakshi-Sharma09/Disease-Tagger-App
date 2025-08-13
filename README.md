@@ -33,26 +33,20 @@
 - **JSON** for disease mapping
 - **Basic NLP** (tokenization, lowercasing)
 
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).  
-You are free to use, modify, and distribute this code for any purpose, as long as proper credit is given to the original author.
-
-© 2025 Sakshi Sharma
-
-
 ---
 
-## 📁 Project Structure
-# Clone the repository
-git clone https://github.com/Sakshi-Sharma09/Disease-Tagger-App.git
+## 📥 Download & Run Locally
 
-# Go into the folder
+You can run the **Disease Tagger App** on your own computer in a few steps:
+
+1️⃣ **Download the code**  
+- Go to the [GitHub Repository](https://github.com/Sakshi-Sharma09/Disease-Tagger-App)  
+- Click the green **Code** button → **Download ZIP**  
+- Unzip the folder
+
+2️⃣ **Install Python**  
+Make sure you have **Python 3.13** installed → [Download Python](https://www.python.org/downloads/)
+
+3️⃣ **Open a terminal/command prompt** and navigate to the folder:
+```bash
 cd Disease-Tagger-App
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the app
-streamlit run streamlit_app.py
-
