@@ -44,3 +44,15 @@ You are free to use, modify, and distribute this code for any purpose, as long a
 ---
 
 ## 📁 Project Structure
+# Clone the repository
+git clone https://github.com/Sakshi-Sharma09/Disease-Tagger-App.git
+
+# Go into the folder
+cd Disease-Tagger-App
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the app
+streamlit run streamlit_app.py
+
