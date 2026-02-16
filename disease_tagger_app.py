@@ -327,13 +327,60 @@ def run_command_line_demo():
 
 def create_streamlit_app():
     """Create and run the Streamlit web application."""
+
+    # ✅ MUST be first Streamlit command
     st.set_page_config(
-        page_title="Disease Tagger & Insight Tool",
+        page_title="Disease Tagger & Insight App",
         page_icon="🧠",
         layout="wide"
     )
+
+      # ---------------- LOGIN SYSTEM ----------------
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
+
+    if not st.session_state.logged_in:
+
+        st.markdown("<h1 style='text-align: center;'>🧠 Disease Tagger & Insight Tool</h1>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center;'>🔐 Secure Access Portal</h3>", unsafe_allow_html=True)
+        st.divider()
+
+        col1, col2, col3 = st.columns([1, 2, 1])
+
+        with col2:
+            username = st.text_input("👤 Username")
+            password = st.text_input("🔑 Password", type="password")
+
+            login_button = st.button("Login", use_container_width=True)
+
+            if login_button:
+                # 🔒 Hardcoded credentials (change later if needed)
+                USERS = {
+                    "admin": "1234",
+                    "sakshi": "ml2026"
+                }
+
+                if username in USERS and USERS[username] == password:
+                    st.session_state.logged_in = True
+                    st.success("✅ Login successful!")
+                    st.rerun()
+                else:
+                    st.error("❌ Invalid username or password")
+
+        st.stop()
+    # ---------------- END LOGIN SYSTEM ----------------
+
+
+    # ---------------- MAIN APP AFTER LOGIN ----------------
+
+    # Logout button in sidebar
+    with st.sidebar:
+        st.success("Logged in successfully")
+        if st.button("🚪 Logout"):
+            st.session_state.logged_in = False
+            st.rerun()
     
-    st.title("🧠 Disease Tagger & Insight Tool")
+    st.title("🧠 Disease Tagger & Insight App")
     st.markdown("### Analyze biomedical text and discover therapeutic insights")
     
     # Initialize components
