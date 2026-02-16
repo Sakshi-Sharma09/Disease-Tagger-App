@@ -402,8 +402,23 @@ def create_streamlit_app():
         if st.button("🚪 Logout"):
             st.session_state.logged_in = False
             st.rerun()
-    st.title("🧠 Disease Tagger & Insight Tool")
-    st.markdown("### Analyze biomedical text and discover therapeutic insights")
+            
+    # HOME PAGE CONTENT
+st.title("🏥 Clinical AI Safety Suite")
+
+st.markdown("""
+Welcome to the Multi-Functional Healthcare Intelligence Platform.
+
+### Modules Available:
+- 🩺 PV Module – Pharmacovigilance Safety Analysis
+- 📋 RA Module – Regulatory Affairs Intelligence
+- 🧪 CT Module – Clinical Trial Support
+- 💊 BA/BE Module – Bioequivalence Study Analysis
+
+Use the sidebar to navigate between modules.
+""")
+
+st.success("System Ready for Use 🚀")
     
     # Initialize components
     tagger = DiseaseTagger()
