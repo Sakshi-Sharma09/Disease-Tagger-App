@@ -335,47 +335,72 @@ def create_streamlit_app():
         layout="wide"
     )
 
-      # ---------------- LOGIN SYSTEM ----------------
+      # -------- LOGIN / SIGNUP SYSTEM --------
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
 
     if not st.session_state.logged_in:
 
-        st.markdown("<h1 style='text-align: center;'>🧠 Disease Tagger & Insight Tool</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center;'>🧠 Disease Tagger & Insight App</h1>", unsafe_allow_html=True)
         st.markdown("<h3 style='text-align: center;'>🔐 Secure Access Portal</h3>", unsafe_allow_html=True)
         st.divider()
 
-        col1, col2, col3 = st.columns([1, 2, 1])
+        # Load users
+        if os.path.exists("users.json"):
+            with open("users.json", "r") as f:
+                USERS = json.load(f)
+        else:
+            USERS = {}
+
+        menu = ["Login", "Sign Up"]
+        choice = st.selectbox("Select Option", menu)
+
+        col1, col2, col3 = st.columns([1,2,1])
 
         with col2:
-            username = st.text_input("👤 Username")
-            password = st.text_input("🔑 Password", type="password")
 
-            login_button = st.button("Login", use_container_width=True)
+            if choice == "Login":
 
-            if login_button:
-                # 🔒 Hardcoded credentials (change later if needed)
-                USERS = {
-                    "admin": "1234",
-                    "sakshi": "ml2026"
-                }
+                username = st.text_input("👤 Username")
+                password = st.text_input("🔑 Password", type="password")
 
-                if username in USERS and USERS[username] == password:
-                    st.session_state.logged_in = True
-                    st.success("✅ Login successful!")
-                    st.rerun()
-                else:
-                    st.error("❌ Invalid username or password")
+                if st.button("Login", use_container_width=True):
+                    if username in USERS and USERS[username] == password:
+                        st.session_state.logged_in = True
+                        st.session_state.username = username
+                        st.success("✅ Login successful!")
+                        st.rerun()
+                    else:
+                        st.error("❌ Invalid username or password")
+
+            elif choice == "Sign Up":
+
+                new_user = st.text_input("👤 New Username")
+                new_password = st.text_input("🔑 New Password", type="password")
+
+                if st.button("Create Account", use_container_width=True):
+
+                    if new_user in USERS:
+                        st.warning("⚠️ Username already exists")
+
+                    elif new_user == "" or new_password == "":
+                        st.warning("⚠️ Please fill all fields")
+
+                    else:
+                        USERS[new_user] = new_password
+
+                        with open("users.json", "w") as f:
+                            json.dump(USERS, f)
+
+                        st.success("🎉 Account created successfully!")
+                        st.info("Now go to Login and sign in.")
 
         st.stop()
-    # ---------------- END LOGIN SYSTEM ----------------
 
+    # -------- AFTER LOGIN --------
 
-    # ---------------- MAIN APP AFTER LOGIN ----------------
-
-    # Logout button in sidebar
     with st.sidebar:
-        st.success("Logged in successfully")
+        st.success(f"Logged in as {st.session_state.username}")
         if st.button("🚪 Logout"):
             st.session_state.logged_in = False
             st.rerun()
