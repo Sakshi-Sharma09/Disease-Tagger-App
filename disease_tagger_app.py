@@ -522,3 +522,6 @@ def main():
     else:
         # Run Streamlit app
         create_streamlit_app()
+
+if __name__ == "__main__":
+    main()
