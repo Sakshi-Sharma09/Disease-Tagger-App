@@ -329,7 +329,7 @@ def run_command_line_demo():
 def create_streamlit_app():
     """Create and run the Streamlit web application."""
     st.set_page_config(
-        page_title="Disease Tagger & Insight Tool",
+        page_title="Disease Tagger & Insight App",
         page_icon="🧠",
         layout="wide"
     )
@@ -407,16 +407,16 @@ def create_streamlit_app():
         st.title("🏥 Clinical AI Safety Suite")
 
         st.markdown("""
-Welcome to the Multi-Functional Healthcare Intelligence Platform.
+        Welcome to the Multi-Functional Healthcare Intelligence Platform.
 
-### Modules Available:
-- 🩺 PV Module – Pharmacovigilance Safety Analysis
-- 📋 RA Module – Regulatory Affairs Intelligence
-- 🧪 CT Module – Clinical Trial Support
-- 💊 BA/BE Module – Bioequivalence Study Analysis
+        ### Modules Available:
+        - 🩺 PV Module – Pharmacovigilance Safety Analysis
+        - 📋 RA Module – Regulatory Affairs Intelligence
+        - 🧪 CT Module – Clinical Trial Support
+        - 💊 BA/BE Module – Bioequivalence Study Analysis
 
-Use the sidebar to navigate between modules.
-""")
+    Use the sidebar to navigate between modules.
+    """)
 
     st.success("System Ready for Use 🚀")
     
