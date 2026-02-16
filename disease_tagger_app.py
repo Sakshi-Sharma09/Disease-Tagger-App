@@ -404,9 +404,9 @@ def create_streamlit_app():
             st.rerun()
             
     # HOME PAGE CONTENT
-st.title("🏥 Clinical AI Safety Suite")
+        st.title("🏥 Clinical AI Safety Suite")
 
-st.markdown("""
+        st.markdown("""
 Welcome to the Multi-Functional Healthcare Intelligence Platform.
 
 ### Modules Available:
@@ -418,7 +418,7 @@ Welcome to the Multi-Functional Healthcare Intelligence Platform.
 Use the sidebar to navigate between modules.
 """)
 
-st.success("System Ready for Use 🚀")
+    st.success("System Ready for Use 🚀")
     
     # Initialize components
     tagger = DiseaseTagger()
